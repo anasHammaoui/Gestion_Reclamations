@@ -1,4 +1,4 @@
-// *********************************************************Projet Sas: Gestion des reclamations*****************************************************
+// ************************************************Projet Sas: Gestion des reclamations*******************************************
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #define MAX_CHAR 30
 
-// **********************************************************************Gerer les reclamations****************************************
+// ****************************************************Gerer les reclamations****************************************
 // structure qui contient les reclamations
 struct reclamations {
     int id;
@@ -18,6 +18,8 @@ struct reclamations {
 } reclamationList[100];
 // compteur qui a combien des reclamation exists
 int countReclamations = 0;
+
+// ++++++++++++++++++++++++Ajouter /  Afficher Reclamations++++++++++++++++++
 // fonction qui ajout les reclamations
 void ajoutReclamation() {
     srand(time(NULL));
@@ -46,7 +48,6 @@ void ajoutReclamation() {
     strcpy(reclamationList[countReclamations].date,ctime(&autodate));
     countReclamations++;
 }
-
 // fonction qui afficher les reclamation pour les agents et l'administrateur;
 void afficherReclamations() {
    if (countReclamations > 0) {
@@ -63,7 +64,93 @@ void afficherReclamations() {
     printf("+++Il y'a aucune reclamation\n");
    }
 }
-// ************************************************************Gerer les utilisateurs**************************************************
+// +++++++++++++++++++++++++Modifier/supprimer/traiter un reclamation++++++++++++++++++
+
+// Fonction de modifier les reclamation pour les agents/ administrateurs
+void modifierRec(int id){
+    int estModifier = 0; // variable pour verifier si la modification est terminee
+    // modifier la reclamation en utilisent l'identifiant
+    for(int i = 0; i < countReclamations;i++) {
+        if (id == reclamationList[i].id) {
+            // entrer la motif
+            printf("1.Entrer le motif de reclamation(exemples: produit defectueux, service client, facturation)\n");
+            printf("==>");
+            fgets(reclamationList[i].motif,MAX_CHAR,stdin);
+            reclamationList[i].motif[strcspn(reclamationList[i].motif,"\n")] = '\0';
+            // entrer la description de reclamtion  
+            printf("2.Entrer une description detaillee du probleme rencontre.\n");
+            printf("==>");
+            fgets(reclamationList[i].description,300,stdin);
+            reclamationList[i].description[strcspn(reclamationList[i].description,"\n")] = '\0';
+            // entrer la categorie de reclamation  
+            printf("3.Entrer la categorie de reclamation .\n");
+            printf("==>");
+            fgets(reclamationList[i].categorie,MAX_CHAR,stdin);
+            reclamationList[i].categorie[strcspn(reclamationList[i].categorie,"\n")] = '\0';
+            // entrer le status
+              printf("4.Entrer le status de reclamation (en cours, resolue, ou fermee).\n");
+            printf("==>");
+            fgets(reclamationList[i].status,MAX_CHAR,stdin);
+            reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
+        }
+    }
+    // print success si la modification est terminer/ non si il n'est pas terminer
+    if (estModifier == 1) {
+        printf("+++++++La modification est traiter avec success+++++\n");
+    } else{
+        printf("-------La modification est echoue-----\n");
+    }
+}
+// Fonction de supprimer la reclamation
+void supprimerRec(int id) {
+    int estSupprimer = 0;
+    int indexRec;
+    // boucle pour trouver l'index de reclamation
+    for (int i =0; i < countReclamations; i++) {
+        if (id == reclamationList[i].id) {
+            indexRec = i;
+            estSupprimer = 1;
+        }
+    }
+    // boucle pour supprimer la reclamation
+    for (int i = indexRec; i < countReclamations;i++) {
+        reclamationList[i].id = reclamationList[i+1].id;
+        strcpy(reclamationList[i].motif,reclamationList[i+1].motif);
+        strcpy(reclamationList[i].description,reclamationList[i+1].description);
+        strcpy(reclamationList[i].categorie,reclamationList[i+1].categorie);
+        strcpy(reclamationList[i].status,reclamationList[i+1].status);
+        strcpy(reclamationList[i].date,reclamationList[i+1].date);
+        estSupprimer = 1;
+    }
+    if (estSupprimer ==1) {
+        printf("----La reclamation a ete supprimer avec succes---\n");
+    }
+    countReclamations--; //deincrementer les reclamations
+}
+
+// traiter une reclamation pour les agents et admins
+void traiterRec(int id){
+    int estTraiter = 0; // variable pour verifier si la reclamation est traitee
+    // boucle pour traiter la reclamation
+    for(int i = 0; i < countReclamations;i++) {
+        if (id == reclamationList[i].id) {
+            //Entrer la nouvelle status apres traitement reclamation
+             printf("1.Entrer la nouvelle status (en cours, resolue, ou fermee).\n");
+            printf("==>");
+            fgets(reclamationList[i].status,MAX_CHAR,stdin);
+            reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
+        }
+    }
+    // print success si le traitement est terminer/ non si il n'est pas terminer
+    if (estTraiter == 1) {
+        printf("+++++++L'operation est traiter avec success+++++\n");
+    } else{
+        printf("-------Le traitement est echoue-----\n");
+    }
+}
+
+// **************************************************Gerer les utilisateurs**************************************************
+
 // structure qui co ntient les utilisateurs
 struct utilisateurs {
     char identifiant[MAX_CHAR];
@@ -71,12 +158,13 @@ struct utilisateurs {
     char role[MAX_CHAR];
     char nomComplet[MAX_CHAR];
 }utilisateursList[100];
-
 // initialiser un variable pour counter les utilisateurs
 int countUtilisateurs = 1; // nous commencons avec 1 car nous avon un administrateur par default
 
 //incrementer en les fausse essay de sign in
 int countSiFausse = 0; 
+
+// -----------------------------------------------Partie Sign Up/ validation motpass-----------------------------
 
 // fonction de validation de motPass
 int validePass(char motPass[]) {
@@ -148,6 +236,9 @@ void signUp(){
     }
    
 }
+
+// --------------------------------------verifier role/changerRole/Afficher utilisateur/Menu/sign in--------------------------
+
 // fonction pour verifier quel est le role qui connecter
 int verifierRole(int indexRole) {
     if (strcmp(utilisateursList[indexRole].role,"administrateur") == 0) {
@@ -160,6 +251,7 @@ int verifierRole(int indexRole) {
         return -1;
     }
 }
+
 // fonction pour changer les roles d'utilisateurs par admin
 void changerRole() {
     // stocker les inputs d'admin
@@ -201,8 +293,9 @@ void afficherUtilisateurs(){
 int menu(int roleNum) {
     int menuChoix,subMenuChoix;
     if (roleNum == 1) {
-        do {
-            // Afficher la menu d'adminstrateur
+        do {// Afficher la menu d'adminstrateur
+        int smRecId; //supprimer ou modifier un reclamation variable
+        int idTraiter; //identifiant pour traiter
             printf("*****Menu d'administrateur******\n");
             printf("1.Afficher la liste des reclamations.\n");
             printf("2.Modifier ou supprimer une reclamation.\n");
@@ -215,27 +308,53 @@ int menu(int roleNum) {
             getchar();
             switch (menuChoix){
                 case 1:
-                system("@cls||clear");
-                afficherReclamations();
+                    system("@cls||clear");
+                    afficherReclamations();
                 break;
+                case 2:
+                    printf("1.Modifier un reclamation\n");
+                    printf("2.Supprimer un reclamation\n");
+                    scanf("%d",&subMenuChoix);
+                    getchar();
+                        if (subMenuChoix == 1) {
+                            printf("1.Entrer l'identifiant que vous veuiller modifier: ");
+                            scanf("%d",&smRecId);
+                            getchar();
+                            system("@cls||clear");
+                            modifierRec(smRecId);
+                        } else if (subMenuChoix ==2) {
+                             printf("2.Entrer l'identifiant que vous veuiller supprimer: ");
+                            scanf("%d",&smRecId);
+                            getchar();
+                            system("@cls||clear");
+                            supprimerRec(smRecId);
+                        };
+                    break;
+                    case 3:
+                        printf("1.Entrer l'identifiant que vous veuiller traiter: ");
+                        scanf("%d",&idTraiter);
+                        getchar();
+                        traiterRec(idTraiter);
+                        break;
                 case 5:
-                printf("1.Afficher les utilisateurs.\n");
-                printf("2.Changes le role d'un utilisateur.\n");
-                scanf("%d",&subMenuChoix);
-                getchar();
-                if (subMenuChoix == 1) {
-                system("@cls||clear");
-                afficherUtilisateurs();
-                } else if (subMenuChoix ==2) {
-                system("@cls||clear");
-                changerRole();
-                }
+                    printf("1.Afficher les utilisateurs.\n");
+                    printf("2.Changes le role d'un utilisateur.\n");
+                    scanf("%d",&subMenuChoix);
+                    getchar();
+                    if (subMenuChoix == 1) {
+                    system("@cls||clear");
+                    afficherUtilisateurs();
+                    } else if (subMenuChoix ==2) {
+                    system("@cls||clear");
+                    changerRole();
+                    }
                 break;
             }           
         } while (menuChoix != 6);
     } else if (roleNum == 2) {
-       do {
-         // Afficher la menu d'agent de reclamation
+       do {// Afficher la menu d'agent de reclamation
+        int smRecId; //supprimer ou modifier un reclamation variable
+        int idTraiter; //identifiant pour traiter
             printf("*****Menu d'agent de reclamation******\n");
             printf("1.Afficher la liste des reclamations.\n");
             printf("2.Modifier ou supprimer une reclamation.\n");
@@ -250,6 +369,31 @@ int menu(int roleNum) {
                 system("@cls||clear");
                 afficherReclamations();
                 break;
+                case 2:
+                    printf("1.Modifier un reclamation\n");
+                    printf("2.Supprimer un reclamation\n");
+                    scanf("%d",&subMenuChoix);
+                    getchar();
+                        if (subMenuChoix == 1) {
+                            printf("1.Entrer l'identifiant que vous veuiller modifier: ");
+                            scanf("%d",&smRecId);
+                            getchar();
+                            system("@cls||clear");
+                            modifierRec(smRecId);
+                        } else if (subMenuChoix ==2) {
+                             printf("2.Entrer l'identifiant que vous veuiller supprimer: ");
+                            scanf("%d",&smRecId);
+                            getchar();
+                            system("@cls||clear");
+                            supprimerRec(smRecId);
+                        };
+                    break;
+                    case 3:
+                        printf("1.Entrer l'identifiant que vous veuiller traiter: ");
+                        scanf("%d",&idTraiter);
+                        getchar();
+                        traiterRec(idTraiter);
+                        break;
             }     
        } while (menuChoix != 5);
     } else if (roleNum == 3) {
