@@ -22,8 +22,11 @@ struct reclamations {
     char status[MAX_CHAR];
     char date[MAX_CHAR];
     time_t dateI;
+    char dateRech[MAX_CHAR];
     int estTraiter;
     int client;
+    char priorite[MAX_CHAR];
+    int prioriteInt;
 } reclamationList[100];
 
 // ****************************************************Gerer les reclamations****************************************
@@ -63,17 +66,46 @@ void ajoutReclamation() {
    time_t dateToPrint = reclamationList[countReclamations].dateI; strcpy(reclamationList[countReclamations].date,ctime(&dateToPrint));
    
    reclamationList[countReclamations].date[strcspn(reclamationList[countReclamations].date,"\n")]='\0';
+   
+   //utiliser dateToPrint pour ajouter la date sous form de mm/dd/yy en struct pour rechercher en date
+   strftime(reclamationList[countReclamations].dateRech,MAX_CHAR,"%x-%X",localtime(&dateToPrint));
+   
    //traitement par default est non traiter
    reclamationList[countReclamations].estTraiter =0;
    // ajouter l'index de client qui ajout la reclamation
    reclamationList[countReclamations].client = indexUtilisateur;
        //afficher a le client id de la reclamation pour modifier ou supprimer.
     printf("+++Reclamation Id %d a ete cree avec success+++\n", reclamationList[countReclamations].id);
+    //ajouter la system de priorite
+    if (strstr(reclamationList[countReclamations].description, "urgent") != NULL || strstr(reclamationList[countReclamations].description, "instant") != NULL|| strstr(reclamationList[countReclamations].description, "crise") != NULL) {
+    strcpy(	reclamationList[countReclamations].priorite,"haute");
+    reclamationList[countReclamations].prioriteInt = 3;
+    	} else if (strstr(reclamationList[countReclamations].description, "important") != NULL || strstr(reclamationList[countReclamations].description, "principal") != NULL|| strstr(reclamationList[countReclamations].description, "prioritaire") != NULL) {
+    		 strcpy(	reclamationList[countReclamations].priorite,"moyenne");
+  		  reclamationList[countReclamations].prioriteInt = 2;
+    		} else if (strstr(reclamationList[countReclamations].description, "optionnel") != NULL || strstr(reclamationList[countReclamations].description, "facultatif") != NULL|| strstr(reclamationList[countReclamations].description, "secondaire") != NULL) {
+    		 strcpy(	reclamationList[countReclamations].priorite,"basse");
+    		  reclamationList[countReclamations].prioriteInt = 1;
+    		}
     countReclamations++;
 
 }
+// fonction de afficher par prioriter
+void afficherParPrioriter(){
+	for (int i =0; i < countReclamations; i++){
+		for (int j = i+1; j< countReclamations;j++){
+			if (reclamationList[i].prioriteInt < reclamationList[j].prioriteInt){
+			struct reclamations temp = reclamationList[i] ;
+				reclamationList[i] = reclamationList[j];
+				reclamationList[j]= temp;
+				}
+			}
+		}
+	}
 // fonction qui afficher les reclamation pour les agents et l'administrateur;
 void afficherReclamations() {
+   //afficher les reclamation ordonnee par priorite
+   afficherParPrioriter();
    if (countReclamations > 0) {
      for (int i = 0; i < countReclamations; i++) {
         printf("******************Reclamation %d****************\n",i+1);
@@ -164,7 +196,8 @@ void modifierRecClient(int id){
   	int estModifier = 0; // variable pour verifier si la modification est terminee
     for (int i =0; i < countReclamations; i++){
     	if (reclamationList[i].id == id){
-    		  time_t dateModif = time(NULL);
+    		 if (reclamationList[i].client == indexUtilisateur) {
+    		 	 time_t dateModif = time(NULL);
     		int nvMoinsP = difftime(dateModif,reclamationList[i].dateI);
     		if (nvMoinsP <  24*3600){
     // modifier la reclamation en utilisent l'identifiant
@@ -185,6 +218,7 @@ void modifierRecClient(int id){
             reclamationList[i].categorie[strcspn(reclamationList[i].categorie,"\n")] = '\0';
             estModifier = 1;
     			}
+    		 	}
     		}
     	}
     // print success si la modification est terminer/ non si il n'est pas terminer
@@ -313,9 +347,87 @@ void rechercher(){
 				if (estTrouver != 1){
 						printf("+++ce reclamation n'existe pas+++\n");
 					}
-			}
+			} else if (menuChoix == 3){
+				char date[MAX_CHAR];
+			printf("1.Entrer la date sous forme de mm/dd/yy-hh:mm:ss.\n");
+			scanf("%s",&date);
+			getchar();
+			for (int i = 0; i <countReclamations;i++){
+		if(strcmp(reclamationList[i].dateRech,date) == 0)	{
+					   printf("******************Reclamation %d****************\n",i+1);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
+        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
+        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
+        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+        printf("+++status de reclamation: %s\n",reclamationList[i].status);
+        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
+        if(reclamationList[i].estTraiter == 0){
+        	printf("+++Traiter ou Non: Non traiter\n");
+        	} else {
+        		printf("+++Traiter ou Non: traiter avec success\n");
+        		}
+        		estTrouver = 1;
+					}
+				}
+				if (estTrouver != 1){
+						printf("+++ce reclamation n'existe pas+++\n");
+					}
+				} else if (menuChoix == 4) {
+					char status[MAX_CHAR];
+					printf("1.Entrer le status(en cours, resolue, fermee).\n");
+					fgets(status,MAX_CHAR,stdin);
+					status[strcspn(status,"\n")] ='\0';
+					for (int i =0; i < countReclamations;i++){
+						if(strcmp(reclamationList[i].status,status) == 0){
+							 printf("******************Reclamation %d****************\n",i+1);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
+        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
+        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
+        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+        printf("+++status de reclamation: %s\n",reclamationList[i].status);
+        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
+        if(reclamationList[i].estTraiter == 0){
+        	printf("+++Traiter ou Non: Non traiter\n");
+        	} else {
+        		printf("+++Traiter ou Non: traiter avec success\n");
+        		}
+        		estTrouver = 1;
+					}
+				}
+				if (estTrouver != 1){
+						printf("+++ce reclamation n'existe pas+++\n");
+						}
+					}else if (menuChoix == 5) {
+					char categorie[MAX_CHAR];
+					printf("1.Entrer la categorie pour rechercher.\n");
+					fgets(categorie,MAX_CHAR,stdin);
+					categorie[strcspn(categorie,"\n")] ='\0';
+					for (int i =0; i < countReclamations;i++){
+						if(strcmp(reclamationList[i].categorie,categorie) == 0){
+							 printf("******************Reclamation %d****************\n",i+1);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
+        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
+        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
+        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+        printf("+++status de reclamation: %s\n",reclamationList[i].status);
+        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
+        if(reclamationList[i].estTraiter == 0){
+        	printf("+++Traiter ou Non: Non traiter\n");
+        	} else {
+        		printf("+++Traiter ou Non: traiter avec success\n");
+        		}
+        		estTrouver = 1;
+					}
+				}
+				if (estTrouver != 1){
+						printf("+++ce reclamation n'existe pas+++\n");
+						}
+					}	
 		} while (menuChoix != 6);
-	}
+	} 
 // **************************************************Gerer les utilisateurs**************************************************
 // initialiser un variable pour counter les utilisateurs
 int countUtilisateurs = 1; // nous commencons avec 1 car nous avon un administrateur par default
