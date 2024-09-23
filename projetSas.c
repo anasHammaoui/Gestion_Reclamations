@@ -10,7 +10,7 @@ struct utilisateurs {
     char identifiant[MAX_CHAR];
     char motPass[MAX_CHAR];
     char role[MAX_CHAR];
-    char nomComplet[MAX_CHAR];
+    char nom[MAX_CHAR];
 }utilisateursList[100];
 
 // structure qui contient les reclamations
@@ -33,6 +33,8 @@ struct reclamations {
 
 // compteur qui a combien des reclamation exists
 int countReclamations = 0;
+// compteur des reclamations resouler
+int countResolue = 0;
 // var pour connaître le client qui ajout la reclamation / utilisateur qui sign in
 int indexUtilisateur;
 // ++++++++++++++++++++++++Ajouter /  Afficher Reclamations++++++++++++++++++
@@ -274,6 +276,10 @@ void traiterRec(int id){
             reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
             estTraiter = 1;
             reclamationList[i].estTraiter = estTraiter;
+            // counter les reclamation resolue
+            if (strcmp(reclamationList[i].status,"resolue") == 0) {
+                countResolue++;
+            }
         }
     }
     // print success si le traitement est terminer/ non si il n'est pas terminer
@@ -327,9 +333,9 @@ void rechercher(){
 			fgets(nom,MAX_CHAR,stdin);
 			nom[strcspn(nom,"\n")] = '\0';
 			for (int i = 0; i < countReclamations;i++){
-		if(strcmp(utilisateursList[reclamationList[i].client].nomComplet,nom) == 0 ){
+		if(strcmp(utilisateursList[reclamationList[i].client].nom,nom) == 0 ){
 					   printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
@@ -355,7 +361,7 @@ void rechercher(){
 			for (int i = 0; i <countReclamations;i++){
 		if(strcmp(reclamationList[i].dateRech,date) == 0)	{
 					   printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
@@ -381,7 +387,7 @@ void rechercher(){
 					for (int i =0; i < countReclamations;i++){
 						if(strcmp(reclamationList[i].status,status) == 0){
 							 printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
@@ -407,7 +413,7 @@ void rechercher(){
 					for (int i =0; i < countReclamations;i++){
 						if(strcmp(reclamationList[i].categorie,categorie) == 0){
 							 printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nomComplet);
+		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
@@ -428,6 +434,25 @@ void rechercher(){
 					}	
 		} while (menuChoix != 6);
 	} 
+//****************************************************Statistiques et Rapports**********************************************
+void StatsReports() {
+    int menuChoix;
+    do {
+        printf("1.Afficher le nombre total de reclamations.\n");
+        printf("2.Afficher le taux de resolution des reclamations\n");
+        printf("3.Calculer le delai moyen de traitement des reclamations\n");
+        printf("4.Rapport journalier\n");
+        printf("5.Retour au menu principal.\n");
+        printf("==>");
+        scanf("%d",&menuChoix);
+        getchar();
+        if (menuChoix == 1) {
+            printf("===>Il y'a %d reclamation en total<==\n",countReclamations); //total reclamations
+        } else if (menuChoix == 2) {
+            printf("===>Il y'a %d reclamations resolue sur %d reclmations <==",countResolue,countReclamations); //total reclamations resolue par rapport a total reclamations
+        }
+    } while (menuChoix != 5);
+}
 // **************************************************Gerer les utilisateurs**************************************************
 // initialiser un variable pour counter les utilisateurs
 int countUtilisateurs = 1; // nous commencons avec 1 car nous avon un administrateur par default
@@ -481,11 +506,11 @@ void signUp(){
     utilisateursList[countUtilisateurs].identifiant[strcspn(utilisateursList[countUtilisateurs].identifiant,"\n")] = '\0';
 
     // entree le nom complet
-    printf("1.2 Entrer votre nom complet:\n");
+    printf("1.2 Entrer votre nom:\n");
     printf("====>");
-    fgets(utilisateursList[countUtilisateurs].nomComplet,MAX_CHAR,stdin);
+    fgets(utilisateursList[countUtilisateurs].nom,MAX_CHAR,stdin);
     // supprimer la routeur a la ligne de la chaine de caractere
-    utilisateursList[countUtilisateurs].nomComplet[strcspn(utilisateursList[countUtilisateurs].nomComplet,"\n")] = '\0';
+    utilisateursList[countUtilisateurs].nom[strcspn(utilisateursList[countUtilisateurs].nom,"\n")] = '\0';
     strcpy(utilisateursList[countUtilisateurs].role,"client");
 
      // entree le mot de pass
@@ -554,7 +579,7 @@ void changerRole() {
 void afficherUtilisateurs(){
     for(int i =0; i < countUtilisateurs; i++) {
         printf("********Utilisateur %d**********\n",i+1);
-        printf("--Nom complet: %s--\n",utilisateursList[i].nomComplet);
+        printf("--Nom complet: %s--\n",utilisateursList[i].nom);
         printf("--Identifiant: %s--\n",utilisateursList[i].identifiant);
         printf("--Role: %s--\n",utilisateursList[i].role);
         printf("--Mot pass: %s--\n",utilisateursList[i].motPass);
@@ -573,7 +598,8 @@ int menu(int roleNum) {
             printf("3.Traiter une reclamation.\n");
             printf("4.Rechercher une reclamation.\n");
             printf("5.Gerer les utilisateurs.\n");
-            printf("6.Retour au menu principal.\n");
+            printf("6.Statistiques et rapports.\n");
+            printf("7.Retour au menu principal.\n");
             printf("==> ");
             scanf("%d",&menuChoix);
             getchar();
@@ -624,8 +650,13 @@ int menu(int roleNum) {
                     changerRole();
                     }
                 break;
+                case 6:
+                system("@cls||clear");
+                StatsReports();
+                break;
+                
             }           
-        } while (menuChoix != 6);
+        } while (menuChoix != 7);
     } else if (roleNum == 2) {
        do {// Afficher la menu d'agent de reclamation
         int smRecId; //supprimer ou modifier un reclamation variable
@@ -771,7 +802,7 @@ int main() {
     // ajouter le premiere utilisateur comme un administrateur par default
         strcpy(utilisateursList[0].identifiant,"admin2024");
         strcpy(utilisateursList[0].role,"administrateur");
-        strcpy(utilisateursList[0].nomComplet,"admin projet");
+        strcpy(utilisateursList[0].nom,"admin projet");
         strcpy(utilisateursList[0].motPass,"Admin@2024");
 
     do {
