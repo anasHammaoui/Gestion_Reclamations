@@ -477,6 +477,29 @@ void StatsReports() {
                 secondes = moyenneTempsTraiter;
             }
             printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes\n <==",minutes, secondes);
+        } else if (menuChoix == 4) {
+            int ajoutSuppStats;
+            printf("1.ajouter les statistique en un file.\n");
+            printf("2.supprimer tousles statistique.\n");
+            printf("3.Menu Principal.\n");
+            scanf("%d",&ajoutSuppStats);
+            getchar();
+            if (ajoutSuppStats == 1) {
+                FILE *stats = fopen("stats.txt","w");
+                time_t dateStats = time(NULL);
+               fprintf(stats,"******%s*******\n",ctime(&dateStats));
+               fprintf(stats,"+++++Nous avons %d Reclamations en total++++\n",countReclamations);
+               fprintf(stats,"+++++Il y'a %d reclamation resolue par rapport a %d reclamations++++\n",countResolue,countReclamations);
+            fprintf(stats,"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+            fclose(stats); 
+            } else if (ajoutSuppStats == 2) {
+                if (remove("stats.txt") == 0) {
+                    printf("++++Supprimer avec success++++\n");
+                } else {
+                    printf("++++ce file n'existe pas++++\n");
+                }
+            }
+
         }
     } while (menuChoix != 5);
 }
