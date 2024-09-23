@@ -465,7 +465,7 @@ int countSiFausse = 0;
 // fonction de validation de motPass
 int validePass(char motPass[]) {
     // verifier si les quatre type de caracteres est exist
-    int siMaj = 0, siMin = 0, siChiff = 0, siSpec = 0, nomEti = 1;
+    int siMaj = 0, siMin = 0, siChiff = 0, siSpec = 0, nomEti = 1, pasNom = 1;
 
     // boucle pour verifier les caracteres
     for (int i =0; i < strlen(motPass);i++) {
@@ -479,15 +479,18 @@ int validePass(char motPass[]) {
             siSpec = 1;
         }
     }
-
+    // verifier si le mot pass contient le nom de utilisateurs
+    if (strstr(motPass,utilisateursList[countUtilisateurs].nom) != NULL) { // fonciton qui verifier si string contient un substring
+        pasNom = 0;
+    }
     // verifier si le mot de pass == le nom utilisateur
     if (strcmp(motPass,utilisateursList[countUtilisateurs].identifiant) == 0) {
         nomEti = 0;
     }
 
      // la somme des quatre somme de caracteres
-    int verifierPass = siMaj + siMin+ siChiff +siSpec+ nomEti;
-    if (strlen(motPass) >= 8 && verifierPass == 5) {
+    int verifierPass = siMaj + siMin+ siChiff +siSpec+ nomEti+ pasNom;
+    if (strlen(motPass) >= 8 && verifierPass == 6) {
         return 1;
     } else {
         return 0;
@@ -527,7 +530,7 @@ void signUp(){
        printf("+++votre compte a ete cree avec succes++++\n");
     } else {
         system("@cls||clear");
-        printf("Entrer un mot pass valid (plus 8 caractere avec des lettres majusculles et miniscule et des chiffres et des lettres special et ne repete pas le nom utilisateur!!)\n");
+        printf("Entrer un mot pass valid (plus 8 caractere avec des lettres majusculles et miniscule et des chiffres et des lettres special et ne repete pas le nom utilisateur et ne contient pas votre nom!!)\n");
         signUp();
     }
    
@@ -802,7 +805,7 @@ int main() {
     // ajouter le premiere utilisateur comme un administrateur par default
         strcpy(utilisateursList[0].identifiant,"admin2024");
         strcpy(utilisateursList[0].role,"administrateur");
-        strcpy(utilisateursList[0].nom,"admin projet");
+        strcpy(utilisateursList[0].nom,"owner");
         strcpy(utilisateursList[0].motPass,"Admin@2024");
 
     do {
