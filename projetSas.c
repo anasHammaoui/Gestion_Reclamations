@@ -15,20 +15,20 @@ struct utilisateurs {
 
 // structure qui contient les reclamations
 struct reclamations {
-    int id;
+    int id; //id generer aleratoirement
     char motif[MAX_CHAR];
     char description[300];
     char categorie[MAX_CHAR];
-    char status[MAX_CHAR];
-    char date[MAX_CHAR];
-    time_t dateI;
-    char dateRech[MAX_CHAR];
-    int estTraiter;
-    time_t dateTraiter;
-    time_t tempsTraitement;
-    int client;
-    char priorite[MAX_CHAR];
-    int prioriteInt;
+    char status[MAX_CHAR]; 
+    char date[MAX_CHAR]; //la date d'ajout pour afficher a admins/agents
+    time_t dateI;//la date d'ajout en seconde
+    char dateRech[MAX_CHAR]; //la date en forme de string en forme de mm/dd/yy-hh:mm::ss
+    int estTraiter; //la rec traiter sera prend la valeur 1
+    time_t dateTraiter; //la date qui la reclamation a traiter
+    time_t tempsTraitement; // combien de temps pour la reclamation a ete traiter
+    int client; // index de l'utilisateur qui ajouter la reclamation
+    char priorite[MAX_CHAR]; //la prioriter form de string
+    int prioriteInt; //niveau de pririter en int "heute= 3, moyenne = 2, basse = 1"
 } reclamationList[100];
 
 // ****************************************************Gerer les reclamations****************************************
@@ -56,7 +56,7 @@ void ajoutReclamation() {
     fgets(reclamationList[countReclamations].description,300,stdin);
     reclamationList[countReclamations].description[strcspn(reclamationList[countReclamations].description,"\n")] = '\0';
     // entrer la categorie de reclamation  
-    printf("1.3 Entrer la categorie de reclamation .\n");
+    printf("1.3 Entrer la categorie de reclamation(produit, service, facturation) .\n");
     printf("==>");
     fgets(reclamationList[countReclamations].categorie,MAX_CHAR,stdin);
     reclamationList[countReclamations].categorie[strcspn(reclamationList[countReclamations].categorie,"\n")] = '\0';
@@ -67,11 +67,11 @@ void ajoutReclamation() {
     //stocker la date en secondes pour utiliser en modifier pour client
     reclamationList[countReclamations].dateI = time(NULL); 
     // utiliser la date en seconde dans un variable pour utiliser de afficher comme un string
-   time_t dateToPrint = reclamationList[countReclamations].dateI; strcpy(reclamationList[countReclamations].date,ctime(&dateToPrint));
-   
+   time_t dateToPrint = reclamationList[countReclamations].dateI; 
+   strcpy(reclamationList[countReclamations].date,ctime(&dateToPrint));
    reclamationList[countReclamations].date[strcspn(reclamationList[countReclamations].date,"\n")]='\0';
    
-   //utiliser dateToPrint pour ajouter la date sous form de mm/dd/yy en struct pour rechercher en date
+   //utiliser dateToPrint pour ajouter la date sous form de mm/dd/yy-hh:mm:ss en struct pour rechercher en date
    strftime(reclamationList[countReclamations].dateRech,MAX_CHAR,"%x-%X",localtime(&dateToPrint));
    
    //traitement par default est non traiter
@@ -114,6 +114,7 @@ void afficherReclamations() {
      for (int i = 0; i < countReclamations; i++) {
         printf("******************Reclamation %d****************\n",i+1);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
+        printf("+++Client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
         printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
@@ -148,7 +149,7 @@ void modifierRec(int id){
             fgets(reclamationList[i].description,300,stdin);
             reclamationList[i].description[strcspn(reclamationList[i].description,"\n")] = '\0';
             // entrer la categorie de reclamation  
-            printf("3.Entrer la categorie de reclamation .\n");
+            printf("3.Entrer la categorie de reclamation (exemples: produit, service, facturation).\n");
             printf("==>");
             fgets(reclamationList[i].categorie,MAX_CHAR,stdin);
             reclamationList[i].categorie[strcspn(reclamationList[i].categorie,"\n")] = '\0';
@@ -179,12 +180,7 @@ void supprimerRec(int id) {
     }
     // boucle pour supprimer la reclamation
     for (int i = indexRec; i < countReclamations;i++) {
-        reclamationList[i].id = reclamationList[i+1].id;
-        strcpy(reclamationList[i].motif,reclamationList[i+1].motif);
-        strcpy(reclamationList[i].description,reclamationList[i+1].description);
-        strcpy(reclamationList[i].categorie,reclamationList[i+1].categorie);
-        strcpy(reclamationList[i].status,reclamationList[i+1].status);
-        strcpy(reclamationList[i].date,reclamationList[i+1].date);
+        reclamationList[i] = reclamationList[i+1];
         estSupprimer = 1;
     }
    if (estSupprimer == 1) {
@@ -249,12 +245,7 @@ void supprimerRecClient(int id){
     	}
     	// boucle pour supprimer la reclamation
     for (int i = indexSupp; i < countReclamations;i++) {
-        reclamationList[i].id = reclamationList[i+1].id;
-        strcpy(reclamationList[i].motif,reclamationList[i+1].motif);
-        strcpy(reclamationList[i].description,reclamationList[i+1].description);
-        strcpy(reclamationList[i].categorie,reclamationList[i+1].categorie);
-        strcpy(reclamationList[i].status,reclamationList[i+1].status);
-        strcpy(reclamationList[i].date,reclamationList[i+1].date);
+        reclamationList[i] = reclamationList[i+1];
         estSupprimer = 1;
     }
     // print success si la supprission est terminer/ non si il n'est pas terminer
@@ -412,7 +403,7 @@ void rechercher(){
 						}
 					}else if (menuChoix == 5) {
 					char categorie[MAX_CHAR];
-					printf("1.Entrer la categorie pour rechercher.\n");
+					printf("1.Entrer la categorie pour rechercher(produit, service, facturation).\n");
 					fgets(categorie,MAX_CHAR,stdin);
 					categorie[strcspn(categorie,"\n")] ='\0';
 					for (int i =0; i < countReclamations;i++){
@@ -457,7 +448,7 @@ void StatsReports() {
             printf("===>Il y'a %d reclamations resolue sur %d reclmations <==\n",countResolue,countReclamations); //total reclamations resolue par rapport a total reclamations
         } else if (menuChoix == 3) {
             int tousDateTraitement = 0; //variable qui contient la somme de temps pour traiter tous les reclmations
-            int reclamationsTraiter = 0;
+            int reclamationsTraiter = 0; //les reclamation qui traiter
             // boucle pour calculer la somme
             for (int i = 0; i < countReclamations; i++) {
                 if (reclamationList[i].estTraiter == 1) {
@@ -472,15 +463,15 @@ void StatsReports() {
             if (moyenneTempsTraiter >= 60) {
                 minutes = moyenneTempsTraiter / 60;
                 secondes = moyenneTempsTraiter%60;
-                moyenneTempsTraiter / 60;
+                moyenneTempsTraiter /= 60;
             } else {
                 secondes = moyenneTempsTraiter;
             }
             printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes\n <==",minutes, secondes);
         } else if (menuChoix == 4) {
-            int ajoutSuppStats;
+            int ajoutSuppStats; //variable pour le choix
             printf("1.ajouter les statistique en un file.\n");
-            printf("2.supprimer tousles statistique.\n");
+            printf("2.supprimer tous les statistique.\n");
             printf("3.Menu Principal.\n");
             scanf("%d",&ajoutSuppStats);
             getchar();
@@ -608,7 +599,7 @@ void changerRole() {
     printf("5.1 Entrer l'identifiant que vous veuillez changer sa role: ");
     fgets(identif,MAX_CHAR,stdin);
     identif[strcspn(identif,"\n")] = '\0';
-    printf("5.2 Entrer la nouvelle role qui'il sera prend: ");
+    printf("5.2 Entrer la nouvelle role qui'il sera prend(client, agent de reclamation, administrateur): ");
     fgets(nvRole,MAX_CHAR,stdin);
     nvRole[strcspn(nvRole,"\n")] = '\0';
     // variable qui verifier si cette utilisateur est change ou non
@@ -639,7 +630,7 @@ void afficherUtilisateurs(){
     }
 }
 // fonction pour afficher le menu par rapport de de role qui est connecter
-int menu(int roleNum) {
+void menu(int roleNum) {
     int menuChoix,subMenuChoix;
     if (roleNum == 1) {
         do {// Afficher la menu d'adminstrateur
@@ -687,7 +678,6 @@ int menu(int roleNum) {
                         traiterRec(idTraiter);
                         break;
                         case 4:
-                        system("@cls||clear");
                         rechercher();
                         break;
                 case 5:
@@ -764,7 +754,6 @@ int menu(int roleNum) {
          {
             // Afficher la menu de client
              int smRecId; //supprimer ou modifier un reclamation variable
-        int idTraiter; //identifiant pour traiter
             printf("*****Menu de client******\n");
             printf("1.Ajouter une reclamation.\n");
             printf("2.Modifier ou supprimer une reclamation.\n");
@@ -823,7 +812,7 @@ void signIn(){
     for (int i = 0; i < countUtilisateurs; i++) {
         if (strcmp(utilisateursList[i].identifiant, identifiant) == 0 && strcmp(utilisateursList[i].motPass, motPass) == 0) {
             vrai  =1;
-            indexUtilisateur = i;
+            indexUtilisateur = i; //ajouter l'index de client qui est log in maintenant
         } 
     }
 
