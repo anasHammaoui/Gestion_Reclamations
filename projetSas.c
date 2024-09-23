@@ -24,6 +24,8 @@ struct reclamations {
     time_t dateI;
     char dateRech[MAX_CHAR];
     int estTraiter;
+    time_t dateTraiter;
+    time_t tempsTraitement;
     int client;
     char priorite[MAX_CHAR];
     int prioriteInt;
@@ -276,6 +278,9 @@ void traiterRec(int id){
             reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
             estTraiter = 1;
             reclamationList[i].estTraiter = estTraiter;
+            reclamationList[i].dateTraiter = time(NULL); //date de traitement
+            // calclutler combien de temps et prend pour traiter
+             reclamationList[i].tempsTraitement = difftime(reclamationList[i].dateTraiter,reclamationList[i].dateI);
             // counter les reclamation resolue
             if (strcmp(reclamationList[i].status,"resolue") == 0) {
                 countResolue++;
@@ -449,7 +454,29 @@ void StatsReports() {
         if (menuChoix == 1) {
             printf("===>Il y'a %d reclamation en total<==\n",countReclamations); //total reclamations
         } else if (menuChoix == 2) {
-            printf("===>Il y'a %d reclamations resolue sur %d reclmations <==",countResolue,countReclamations); //total reclamations resolue par rapport a total reclamations
+            printf("===>Il y'a %d reclamations resolue sur %d reclmations <==\n",countResolue,countReclamations); //total reclamations resolue par rapport a total reclamations
+        } else if (menuChoix == 3) {
+            int tousDateTraitement = 0; //variable qui contient la somme de temps pour traiter tous les reclmations
+            int reclamationsTraiter = 0;
+            // boucle pour calculer la somme
+            for (int i = 0; i < countReclamations; i++) {
+                if (reclamationList[i].estTraiter == 1) {
+                    tousDateTraitement += reclamationList[i].tempsTraitement;
+                    reclamationsTraiter++;
+                }
+            }
+            // la moyenne de temps pour traiter un reclamation en secondes
+            int moyenneTempsTraiter = (tousDateTraitement / reclamationsTraiter);
+            // condition pour afficher le temps en fontion de minute et secondes
+            int minutes, secondes;
+            if (moyenneTempsTraiter >= 60) {
+                minutes = moyenneTempsTraiter / 60;
+                secondes = moyenneTempsTraiter%60;
+                moyenneTempsTraiter / 60;
+            } else {
+                secondes = moyenneTempsTraiter;
+            }
+            printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes\n <==",minutes, secondes);
         }
     } while (menuChoix != 5);
 }
@@ -803,7 +830,7 @@ void signIn(){
 int main() {
     int choixMenuPrincipal;
     // ajouter le premiere utilisateur comme un administrateur par default
-        strcpy(utilisateursList[0].identifiant,"admin2024");
+        strcpy(utilisateursList[0].identifiant,"admin123");
         strcpy(utilisateursList[0].role,"administrateur");
         strcpy(utilisateursList[0].nom,"owner");
         strcpy(utilisateursList[0].motPass,"Admin@2024");
