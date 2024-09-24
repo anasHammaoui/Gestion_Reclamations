@@ -29,6 +29,7 @@ struct reclamations {
     int client; // index de l'utilisateur qui ajouter la reclamation
     char priorite[MAX_CHAR]; //la prioriter form de string
     int prioriteInt; //niveau de pririter en int "heute= 3, moyenne = 2, basse = 1"
+    char noteInterne[100];
 } reclamationList[100];
 
 // ****************************************************Gerer les reclamations****************************************
@@ -114,7 +115,7 @@ void afficherReclamations() {
     		}
     }
    //afficher les reclamation ordonnee par priorite
-   afficherParPrioriter();
+    afficherParPrioriter();
    if (countReclamations > 0) {
      for (int i = 0; i < countReclamations; i++) {
         printf("******************Reclamation %d****************\n",i+1);
@@ -124,6 +125,9 @@ void afficherReclamations() {
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
         printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
         printf("+++status de reclamation: %s\n",reclamationList[i].status);
+        if ( strcmp(reclamationList[i].noteInterne,"")!= 0) {
+        printf("+++Notes interne: %s\n",reclamationList[i].noteInterne);
+        }
         printf("+++Date de reclamation: %s\n",reclamationList[i].date);
         if(reclamationList[i].estTraiter == 0){
         	printf("+++Traiter ou Non: Non traiter\n");
@@ -158,11 +162,6 @@ void modifierRec(int id){
             printf("==>");
             fgets(reclamationList[i].categorie,MAX_CHAR,stdin);
             reclamationList[i].categorie[strcspn(reclamationList[i].categorie,"\n")] = '\0';
-            // entrer le status
-              printf("4.Entrer le status de reclamation (en cours, resolue, ou fermee).\n");
-            printf("==>");
-            fgets(reclamationList[i].status,MAX_CHAR,stdin);
-            reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
             estModifier = 1;
         }
     }
@@ -273,6 +272,11 @@ void traiterRec(int id){
             printf("==>");
             fgets(reclamationList[i].status,MAX_CHAR,stdin);
             reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
+            //Ajouter des notes interne
+             printf("2.Entrer des notes internes si vous pouvez.\n");
+            printf("==>");
+            fgets(reclamationList[i].noteInterne,MAX_CHAR,stdin);
+            reclamationList[i].noteInterne[strcspn(reclamationList[i].noteInterne,"\n")] = '\0';
             estTraiter = 1;
             reclamationList[i].estTraiter = estTraiter;
             reclamationList[i].dateTraiter = time(NULL); //date de traitement
@@ -312,6 +316,7 @@ void rechercher(){
 			for (int i = 0; i < countReclamations;i++){
 				if(id == reclamationList[i].id){
 					   printf("******************Reclamation %d****************\n",i+1);
+        printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
         printf("+++Id de reclamation: %d\n",reclamationList[i].id);
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
