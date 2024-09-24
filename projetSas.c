@@ -82,17 +82,6 @@ void ajoutReclamation() {
    reclamationList[countReclamations].client = indexUtilisateur;
        //afficher a le client id de la reclamation pour modifier ou supprimer.
     printf("+++Reclamation Id %d a ete cree avec success+++\n", reclamationList[countReclamations].id);
-    //ajouter la system de priorite
-    if (strstr(reclamationList[countReclamations].description, "urgent") != NULL || strstr(reclamationList[countReclamations].description, "instant") != NULL|| strstr(reclamationList[countReclamations].description, "crise") != NULL) {
-    strcpy(	reclamationList[countReclamations].priorite,"haute");
-    reclamationList[countReclamations].prioriteInt = 3;
-    	} else if (strstr(reclamationList[countReclamations].description, "important") != NULL || strstr(reclamationList[countReclamations].description, "principal") != NULL|| strstr(reclamationList[countReclamations].description, "prioritaire") != NULL) {
-    		 strcpy(	reclamationList[countReclamations].priorite,"moyenne");
-  		  reclamationList[countReclamations].prioriteInt = 2;
-    		} else if (strstr(reclamationList[countReclamations].description, "optionnel") != NULL || strstr(reclamationList[countReclamations].description, "facultatif") != NULL|| strstr(reclamationList[countReclamations].description, "secondaire") != NULL) {
-    		 strcpy(	reclamationList[countReclamations].priorite,"basse");
-    		  reclamationList[countReclamations].prioriteInt = 1;
-    		}
     countReclamations++;
 
 }
@@ -110,6 +99,20 @@ void afficherParPrioriter(){
 	}
 // fonction qui afficher les reclamation pour les agents et l'administrateur;
 void afficherReclamations() {
+    // donne la prioriter a les reclamation
+    for (int i = 0; i < countReclamations; i++) {
+         //ajouter la system de priorite
+    if (strstr(reclamationList[i].description, "urgent") != NULL || strstr(reclamationList[i].description, "instant") != NULL|| strstr(reclamationList[i].description,"crise") != NULL) {
+    strcpy(	reclamationList[i].priorite,"haute");
+    reclamationList[i].prioriteInt = 3;
+    	} else if (strstr(reclamationList[i].description, "important") != NULL || strstr(reclamationList[i].description, "principal") != NULL|| strstr(reclamationList[i].description, "prioritaire") != NULL) {
+    		 strcpy(	reclamationList[i].priorite,"moyenne");
+  		  reclamationList[i].prioriteInt = 2;
+    		} else if (strstr(reclamationList[i].description, "optionnel") != NULL || strstr(reclamationList[i].description, "facultatif") != NULL|| strstr(reclamationList[i].description, "secondaire") != NULL) {
+    		 strcpy(	reclamationList[i].priorite,"basse");
+    		  reclamationList[i].prioriteInt = 1;
+    		}
+    }
    //afficher les reclamation ordonnee par priorite
    afficherParPrioriter();
    if (countReclamations > 0) {
@@ -160,6 +163,7 @@ void modifierRec(int id){
             printf("==>");
             fgets(reclamationList[i].status,MAX_CHAR,stdin);
             reclamationList[i].status[strcspn(reclamationList[i].status,"\n")] = '\0';
+            estModifier = 1;
         }
     }
     // print success si la modification est terminer/ non si il n'est pas terminer
@@ -447,7 +451,8 @@ void StatsReports() {
         if (menuChoix == 1) {
             printf("===>Il y'a %d reclamation en total<==\n",countReclamations); //total reclamations
         } else if (menuChoix == 2) {
-            printf("===>Il y'a %d reclamations resolue sur %d reclmations <==\n",countResolue,countReclamations); //total reclamations resolue par rapport a total reclamations
+            float tauxResolution = ((countResolue*1.0) / (countReclamations*1.0)) * 100;
+            printf("===>Le taux de resolution des reclamations est %.2f%% <==\n",tauxResolution); //total reclamations resolue par rapport a total reclamations
         } else if (menuChoix == 3) {
             int tousDateTraitement = 0; //variable qui contient la somme de temps pour traiter tous les reclmations
             int reclamationsTraiter = 0; //les reclamation qui traiter
@@ -469,16 +474,17 @@ void StatsReports() {
             } else {
                 secondes = moyenneTempsTraiter;
             }
-            printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes\n <==",minutes, secondes);
+            printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes <==\n",minutes, secondes);
         } else if (menuChoix == 4) {
                 time_t dateGenerer = time(NULL); //date d'essay pour generer le rapport
                 int si24h  = difftime(dateGenerer,commenceJournee); //combien temps entre l debut de journee et la date de generation
-                if (si24h > 24*3600) { 
+                if (si24h > 40) { 
                     FILE *stats = fopen("stats.txt","w");
                 time_t dateStats = time(NULL);
+            float tauxResolution = ((countResolue*1.0) / (countReclamations*1.0)) * 100; //multipler int * 1.0 pour changer int to float
                fprintf(stats,"******%s*******\n",ctime(&dateStats));
                fprintf(stats,"+++++Nous avons %d Reclamations en total++++\n",countReclamations);
-               fprintf(stats,"+++++Il y'a %d reclamation resolue par rapport a %d reclamations++++\n",countResolue,countReclamations);
+               fprintf(stats,"===>Le taux de resolution des reclamations est %.2f%% <==\n",tauxResolution);
             fprintf(stats,"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
             fclose(stats);
             printf("++++++Le rapport a ete generer avec success++++\n");
@@ -535,15 +541,29 @@ int validePass(char motPass[]) {
 
 // Sign up fonction pour inscription
 void signUp(){
-    char tempPass[30];
+    char tempPass[MAX_CHAR], tempIdentif[MAX_CHAR];
      // ajouter les autres utilisateur comme des clients
         // entree de l'identifiant
     printf("1.1 Entrer un identifiants:\n");
     printf("====>");
-    fgets(utilisateursList[countUtilisateurs].identifiant,MAX_CHAR,stdin);
+    fgets(tempIdentif,MAX_CHAR,stdin);
     // supprimer la routeur a la ligne de la chaine de caractere
-    utilisateursList[countUtilisateurs].identifiant[strcspn(utilisateursList[countUtilisateurs].identifiant,"\n")] = '\0';
-
+    tempIdentif[strcspn(tempIdentif,"\n")] = '\0'; 
+    // verifier si l'identifiant est deja exister
+    int estExist = 0;
+    for (int i=0; i < countUtilisateurs; i++) {
+        if (strcmp(utilisateursList[i].identifiant,tempIdentif) == 0) {
+            estExist = 1;
+        }
+    }
+    // la condition de verification
+    if (estExist == 0) {
+        strcpy(utilisateursList[countUtilisateurs].identifiant,tempIdentif);
+    } else {
+        printf("++++Ce identifient est deje exist , utiliser un autre identifiant+++\n");
+        signUp(); //recaller la fonction de sign up
+        return; // pour terminer la recursion est start a debut
+    }
     // entree le nom complet
     printf("1.2 Entrer votre nom:\n");
     printf("====>");
@@ -786,7 +806,6 @@ void menu(int roleNum) {
     	printf("--Ce role n'existe pas veuillez contacter l'administrateur pour resolver votre problem\n");
     	}
 }
-
 // Sign in fonction pour connecter a l'application
 void signIn(){
     char identifiant[MAX_CHAR], motPass[MAX_CHAR];

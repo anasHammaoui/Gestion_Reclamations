@@ -1,5 +1,5 @@
-******Tue Sep 24 10:42:42 2024
+******Tue Sep 24 13:00:53 2024
 *******
-+++++Nous avons 3 Reclamations en total++++
-+++++Il y'a 2 reclamation resolue par rapport a 3 reclamations++++
++++++Nous avons 5 Reclamations en total++++
+===>Le taux de resolution des reclamations est 40.00% <==
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
