@@ -97,6 +97,26 @@ void afficherParPrioriter(){
 			}
 		}
 	}
+// boucle d'affiche les reclamaiton
+void boucleAffiche(int index) {
+    printf("******************Reclamation %d****************\n",index+1);
+        printf("+++Id de reclamation: %d\n",reclamationList[index].id);
+        printf("+++Client: %s\n",utilisateursList[reclamationList[index].client].nom);
+        printf("+++Motif de reclamation: %s\n",reclamationList[index].motif);
+        printf("+++Description de reclamation: %s\n",reclamationList[index].description);
+        printf("+++Categorie de reclamation: %s\n",reclamationList[index].categorie);
+        printf("+++priorite de reclamation: %s\n",reclamationList[index].priorite);
+        printf("+++status de reclamation: %s\n",reclamationList[index].status);
+        if ( strcmp(reclamationList[index].noteInterne,"")!= 0) {
+        printf("+++Notes interne: %s\n",reclamationList[index].noteInterne);
+        }
+        printf("+++Date de reclamation: %s\n",reclamationList[index].date);
+        if(reclamationList[index].estTraiter == 0){
+        	printf("+++Traiter ou Non: Non traiter\n");
+        	} else {
+        		printf("+++Traiter ou Non: traiter avec success\n");
+        		}
+}
 // fonction qui afficher les reclamation pour les agents et l'administrateur;
 void afficherReclamations() {
     // donne la prioriter a les reclamation
@@ -117,23 +137,7 @@ void afficherReclamations() {
     afficherParPrioriter();
    if (countReclamations > 0) {
      for (int i = 0; i < countReclamations; i++) {
-        printf("******************Reclamation %d****************\n",i+1);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++priorite de reclamation: %s\n",reclamationList[i].priorite);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        if ( strcmp(reclamationList[i].noteInterne,"")!= 0) {
-        printf("+++Notes interne: %s\n",reclamationList[i].noteInterne);
-        }
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
+        boucleAffiche(i);
     }
    } else {
     printf("+++Il y'a aucune reclamation\n");
@@ -194,7 +198,6 @@ void supprimerRec(int id) {
     } else{
         printf("-------La supprission est echoue-----\n");
     }
- 
 }
 // Fonction de modifier les reclamation pour les clients
 void modifierRecClient(int id){
@@ -299,150 +302,90 @@ void traiterRec(int id){
 }
 //Rechercher reclamation pour les agent/admins
 void rechercher(){
-	int menuChoix;
-	do{
-		int estTrouver = 0;
-		printf("1.Rechercher par identifiant.\n");
-		printf("2.Rechercher par le nom de client.\n");
-		printf("3.Rechercher par date de soumission.\n");
-		printf("4.Rechercher par status(en cours, resolu, fermee).\n");
-		printf("5.Rechercher par categorie.\n");
-		printf("6.Menu principal.\n");
-		scanf("%d",&menuChoix);
-		getchar();
-		if (menuChoix == 1){ // rechercher par id
-			int id;
-			printf("1.Entrer l'identifiant.\n");
-			scanf("%d",&id);
-			getchar();
-			for (int i = 0; i < countReclamations;i++){
-				if(id == reclamationList[i].id){
-					   printf("******************Reclamation %d****************\n",i+1);
-        printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
-        		estTrouver = 1;
-					}
-				}
-					if (estTrouver != 1){
-						printf("+++ce reclamation n'existe pas+++\n");
-					}
-			} else if (menuChoix == 2){ // rechercher par nom de client
-			char nom[MAX_CHAR];
-			printf("1.Entrer le nom de client.\n");
-			fgets(nom,MAX_CHAR,stdin);
-			nom[strcspn(nom,"\n")] = '\0';
-			for (int i = 0; i < countReclamations;i++){
-		if(strcmp(utilisateursList[reclamationList[i].client].nom,nom) == 0 ){
-					   printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
-        		estTrouver = 1;
-					}
-				}
-				if (estTrouver != 1){
-						printf("+++ce reclamation n'existe pas+++\n");
-					}
-			} else if (menuChoix == 3){
-				char date[MAX_CHAR];
-			printf("1.Entrer la date sous forme de mm/dd/yy-hh:mm:ss.\n");
-			scanf("%s",&date);
-			getchar();
-			for (int i = 0; i <countReclamations;i++){
-		if(strcmp(reclamationList[i].dateRech,date) == 0)	{
-					   printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
-        		estTrouver = 1;
-					}
-				}
-				if (estTrouver != 1){
-						printf("+++ce reclamation n'existe pas+++\n");
-					}
-				} else if (menuChoix == 4) {
-					char status[MAX_CHAR];
-					printf("1.Entrer le status(en cours, resolue, fermee).\n");
-					fgets(status,MAX_CHAR,stdin);
-					status[strcspn(status,"\n")] ='\0';
-					for (int i =0; i < countReclamations;i++){
-						if(strcmp(reclamationList[i].status,status) == 0){
-							 printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
-        		estTrouver = 1;
-					}
-				}
-				if (estTrouver != 1){
-						printf("+++ce reclamation n'existe pas+++\n");
-						}
-					}else if (menuChoix == 5) {
-					char categorie[MAX_CHAR];
-					printf("1.Entrer la categorie pour rechercher(produit, service, facturation).\n");
-					fgets(categorie,MAX_CHAR,stdin);
-					categorie[strcspn(categorie,"\n")] ='\0';
-					for (int i =0; i < countReclamations;i++){
-						if(strcmp(reclamationList[i].categorie,categorie) == 0){
-							 printf("******************Reclamation %d****************\n",i+1);
-		 printf("+++Le nom de client: %s\n",utilisateursList[reclamationList[i].client].nom);
-        printf("+++Id de reclamation: %d\n",reclamationList[i].id);
-        printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
-        printf("+++Description de reclamation: %s\n",reclamationList[i].description);
-        printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
-        printf("+++status de reclamation: %s\n",reclamationList[i].status);
-        printf("+++Date de reclamation: %s\n",reclamationList[i].date);
-        if(reclamationList[i].estTraiter == 0){
-        	printf("+++Traiter ou Non: Non traiter\n");
-        	} else {
-        		printf("+++Traiter ou Non: traiter avec success\n");
-        		}
-        		estTrouver = 1;
-					}
-				}
-				if (estTrouver != 1){
-						printf("+++ce reclamation n'existe pas+++\n");
-						}
-					}	
-		} while (menuChoix != 6);
-	} 
+int menuChoix;
+do{
+    int estTrouver = 0;
+    printf("1.Rechercher par identifiant.\n");
+    printf("2.Rechercher par le nom de client.\n");
+    printf("3.Rechercher par date de soumission.\n");
+    printf("4.Rechercher par status(en cours, resolu, fermee).\n");
+    printf("5.Rechercher par categorie.\n");
+    printf("6.Menu principal.\n");
+    scanf("%d",&menuChoix);
+    getchar();
+    if (menuChoix == 1){ // rechercher par id
+    int id;
+    printf("1.Entrer l'identifiant.\n");
+    scanf("%d",&id);
+    getchar();
+    for (int i = 0; i < countReclamations;i++){
+        if(id == reclamationList[i].id){
+            boucleAffiche(i);
+            estTrouver = 1;
+        }
+        }
+        if (estTrouver != 1){
+            printf("+++ce reclamation n'existe pas+++\n");
+        }
+    } else if (menuChoix == 2){ // rechercher par nom de client
+    char nom[MAX_CHAR];
+    printf("1.Entrer le nom de client.\n");
+    fgets(nom,MAX_CHAR,stdin);
+    nom[strcspn(nom,"\n")] = '\0';
+    for (int i = 0; i < countReclamations;i++){
+        if(strcmp(utilisateursList[reclamationList[i].client].nom,nom) == 0 ){
+            boucleAffiche(i);
+            estTrouver = 1;
+            }
+        }
+        if (estTrouver != 1){
+                printf("+++ce reclamation n'existe pas+++\n");
+            }
+    }else if (menuChoix == 3){
+    char date[MAX_CHAR];
+    printf("1.Entrer la date sous forme de mm/dd/yy-hh:mm:ss.\n");
+    scanf("%s",&date);
+    getchar();
+    for (int i = 0; i <countReclamations;i++){
+    if(strcmp(reclamationList[i].dateRech,date) == 0)	{
+        boucleAffiche(i);
+        estTrouver = 1;
+        }
+    }
+    if (estTrouver != 1){
+            printf("+++ce reclamation n'existe pas+++\n");
+        }
+    } else if (menuChoix == 4) {
+        char status[MAX_CHAR];
+        printf("1.Entrer le status(en cours, resolue, fermee).\n");
+        fgets(status,MAX_CHAR,stdin);
+        status[strcspn(status,"\n")] ='\0';
+        for (int i =0; i < countReclamations;i++){
+            if(strcmp(reclamationList[i].status,status) == 0){
+                boucleAffiche(i);
+                estTrouver = 1;
+            }
+    }
+    if (estTrouver != 1){
+            printf("+++ce reclamation n'existe pas+++\n");
+            }
+        }else if (menuChoix == 5) {
+        char categorie[MAX_CHAR];
+        printf("1.Entrer la categorie pour rechercher(produit, service, facturation).\n");
+        fgets(categorie,MAX_CHAR,stdin);
+        categorie[strcspn(categorie,"\n")] ='\0';
+        for (int i =0; i < countReclamations;i++){
+            if(strcmp(reclamationList[i].categorie,categorie) == 0){
+        boucleAffiche(i);
+        estTrouver = 1;
+            }
+    }
+    if (estTrouver != 1){
+            printf("+++ce reclamation n'existe pas+++\n");
+            }
+        }	
+} while (menuChoix != 6);
+} 
 //****************************************************Statistiques et Rapports**********************************************
 void StatsReports() {
     int menuChoix;
@@ -513,7 +456,7 @@ int countSiFausse = 0;
 
 // fonction de validation de motPass
 int validePass(char motPass[]) {
-    // verifier si les quatre type de caracteres est exist
+    // verifier si les 6 type de caracteres est exist
     int siMaj = 0, siMin = 0, siChiff = 0, siSpec = 0, nomEti = 1, pasNom = 1;
 
     // boucle pour verifier les caracteres
