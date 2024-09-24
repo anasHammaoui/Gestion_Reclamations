@@ -39,6 +39,8 @@ int countReclamations = 0;
 int countResolue = 0;
 // var pour connaître le client qui ajout la reclamation / utilisateur qui sign in
 int indexUtilisateur;
+// intializer time de commencer le program pour afficher le rapport quotidien
+time_t commenceJournee;
 // ++++++++++++++++++++++++Ajouter /  Afficher Reclamations++++++++++++++++++
 // fonction qui ajout les reclamations
 void ajoutReclamation() {
@@ -469,28 +471,21 @@ void StatsReports() {
             }
             printf("===>La moyenne de traiter une reclamation est :%d minutes est %d secondes\n <==",minutes, secondes);
         } else if (menuChoix == 4) {
-            int ajoutSuppStats; //variable pour le choix
-            printf("1.ajouter les statistique en un file.\n");
-            printf("2.supprimer tous les statistique.\n");
-            printf("3.Menu Principal.\n");
-            scanf("%d",&ajoutSuppStats);
-            getchar();
-            if (ajoutSuppStats == 1) {
-                FILE *stats = fopen("stats.txt","w");
+                time_t dateGenerer = time(NULL); //date d'essay pour generer le rapport
+                int si24h  = difftime(dateGenerer,commenceJournee); //combien temps entre l debut de journee et la date de generation
+                if (si24h > 24*3600) { 
+                    FILE *stats = fopen("stats.txt","w");
                 time_t dateStats = time(NULL);
                fprintf(stats,"******%s*******\n",ctime(&dateStats));
                fprintf(stats,"+++++Nous avons %d Reclamations en total++++\n",countReclamations);
                fprintf(stats,"+++++Il y'a %d reclamation resolue par rapport a %d reclamations++++\n",countResolue,countReclamations);
             fprintf(stats,"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-            fclose(stats); 
-            } else if (ajoutSuppStats == 2) {
-                if (remove("stats.txt") == 0) {
-                    printf("++++Supprimer avec success++++\n");
+            fclose(stats);
+            printf("++++++Le rapport a ete generer avec success++++\n");
+            commenceJournee = time(NULL); //commencer la journee avec la date de generation de rapport
                 } else {
-                    printf("++++ce file n'existe pas++++\n");
+                    printf("++++++++Attender la journee pour terminer et essayer un autre fois+++++++\n");
                 }
-            }
-
         }
     } while (menuChoix != 5);
 }
@@ -840,6 +835,7 @@ void signIn(){
 }
 
 int main() {
+    commenceJournee = time(NULL);
     int choixMenuPrincipal;
     // ajouter le premiere utilisateur comme un administrateur par default
         strcpy(utilisateursList[0].identifiant,"admin123");
