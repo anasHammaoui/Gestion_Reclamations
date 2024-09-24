@@ -66,7 +66,6 @@ void ajoutReclamation() {
     // status de reclamation en cours par defaut
     strcpy(reclamationList[countReclamations].status,"en cours");
     // date de reclamation prendra automatiqument
-    
     //stocker la date en secondes pour utiliser en modifier pour client
     reclamationList[countReclamations].dateI = time(NULL); 
     // utiliser la date en seconde dans un variable pour utiliser de afficher comme un string
@@ -124,6 +123,7 @@ void afficherReclamations() {
         printf("+++Motif de reclamation: %s\n",reclamationList[i].motif);
         printf("+++Description de reclamation: %s\n",reclamationList[i].description);
         printf("+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+        printf("+++priorite de reclamation: %s\n",reclamationList[i].priorite);
         printf("+++status de reclamation: %s\n",reclamationList[i].status);
         if ( strcmp(reclamationList[i].noteInterne,"")!= 0) {
         printf("+++Notes interne: %s\n",reclamationList[i].noteInterne);
@@ -240,21 +240,23 @@ void supprimerRecClient(int id){
   	int indexSupp; //index de rec que nous supprimer'
     for (int i =0; i < countReclamations; i++){
     	if (reclamationList[i].id == id){
-    		  time_t dateModif = time(NULL);
+    		  if (reclamationList[i].client == indexUtilisateur) {
+                time_t dateModif = time(NULL);
     		int nvMoinsP = difftime(dateModif,reclamationList[i].dateI);
     		if (nvMoinsP <  24*3600){
 			indexSupp = i;
             estSupprimer = 1;
     			}
+              }
     		}
     	}
-    	// boucle pour supprimer la reclamation
+    // print success si la supprission est terminer/ non si il n'est pas terminer
+    if (estSupprimer == 1) {
+        // boucle pour supprimer la reclamation
     for (int i = indexSupp; i < countReclamations;i++) {
         reclamationList[i] = reclamationList[i+1];
         estSupprimer = 1;
     }
-    // print success si la supprission est terminer/ non si il n'est pas terminer
-    if (estSupprimer == 1) {
         printf("+++++++La reclamation a ete supprimer avec success+++++\n");
         countReclamations--;
     } else{
@@ -535,7 +537,7 @@ int validePass(char motPass[]) {
         nomEti = 0;
     }
 
-     // la somme des quatre somme de caracteres
+     // la somme des 6 somme de caracteres
     int verifierPass = siMaj + siMin+ siChiff +siSpec+ nomEti+ pasNom;
     if (strlen(motPass) >= 8 && verifierPass == 6) {
         return 1;
@@ -547,7 +549,6 @@ int validePass(char motPass[]) {
 // Sign up fonction pour inscription
 void signUp(){
     char tempPass[MAX_CHAR], tempIdentif[MAX_CHAR];
-     // ajouter les autres utilisateur comme des clients
         // entree de l'identifiant
     printf("1.1 Entrer un identifiants:\n");
     printf("====>");
@@ -567,7 +568,7 @@ void signUp(){
     } else {
         printf("++++Ce identifient est deje exist , utiliser un autre identifiant+++\n");
         signUp(); //recaller la fonction de sign up
-        return; // pour terminer la recursion est start a debut
+        return; // pour terminer la recursion
     }
     // entree le nom complet
     printf("1.2 Entrer votre nom:\n");
@@ -624,7 +625,7 @@ void changerRole() {
     nvRole[strcspn(nvRole,"\n")] = '\0';
     // variable qui verifier si cette utilisateur est change ou non
     int estChange = 0;
-    // boucle pour rechercher is utilisateur est exist si oui il change sa role
+    // boucle pour rechercher si utilisateur est exist si oui il change sa role
     for (int i = 0; i < countUtilisateurs;i++) {
         if (strcmp(utilisateursList[i].identifiant,identif) == 0) {
             // donne ce identifiant le nouveau role
