@@ -136,6 +136,7 @@ void afficherReclamations() {
    //afficher les reclamation ordonnee par priorite
     afficherParPrioriter();
    if (countReclamations > 0) {
+    printf("******Les Reclamation sont afficher par priorite*****\n");
      for (int i = 0; i < countReclamations; i++) {
         boucleAffiche(i);
     }
