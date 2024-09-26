@@ -429,7 +429,7 @@ void StatsReports() {
         } else if (menuChoix == 4) {
                 time_t dateGenerer = time(NULL); //date d'essay pour generer le rapport
                 int si24h  = difftime(dateGenerer,commenceJournee); //combien temps entre l debut de journee et la date de generation
-                if (si24h > 30) { 
+                if (si24h > 24*3600) { 
                     FILE *stats = fopen("stats.txt","w");
                 time_t dateStats = time(NULL);
             float tauxResolution = ((countResolue*1.0) / (countReclamations*1.0)) * 100; //multipler int * 1.0 pour changer int to float
