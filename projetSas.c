@@ -429,14 +429,56 @@ void StatsReports() {
         } else if (menuChoix == 4) {
                 time_t dateGenerer = time(NULL); //date d'essay pour generer le rapport
                 int si24h  = difftime(dateGenerer,commenceJournee); //combien temps entre l debut de journee et la date de generation
-                if (si24h > 24*3600) { 
+                if (si24h > 30) { 
                     FILE *stats = fopen("stats.txt","w");
                 time_t dateStats = time(NULL);
             float tauxResolution = ((countResolue*1.0) / (countReclamations*1.0)) * 100; //multipler int * 1.0 pour changer int to float
                fprintf(stats,"******%s*******\n",ctime(&dateStats));
-               fprintf(stats,"+++++Nous avons %d Reclamations en total++++\n",countReclamations);
-               fprintf(stats,"===>Le taux de resolution des reclamations est %.2f%% <==\n",tauxResolution);
-            fprintf(stats,"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+            //    afficher les reclamation sur le rapport
+               fprintf(stats,"+++++Nous avons %d Reclamations en total++++\n\n",countReclamations);
+               for (int i = 0; i < countReclamations; i++) {
+                fprintf(stats,"******************Reclamation %d****************\n",i+1);
+                fprintf(stats,"+++Id de reclamation: %d\n",reclamationList[i].id);
+                fprintf(stats,"+++Client: %s\n",utilisateursList[reclamationList[i].client].nom);
+                fprintf(stats,"+++Motif de reclamation: %s\n",reclamationList[i].motif);
+                fprintf(stats,"+++Description de reclamation: %s\n",reclamationList[i].description);
+                fprintf(stats,"+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+                fprintf(stats,"+++priorite de reclamation: %s\n",reclamationList[i].priorite);
+                fprintf(stats,"+++status de reclamation: %s\n",reclamationList[i].status);
+                if ( strcmp(reclamationList[i].noteInterne,"")!= 0) {
+                fprintf(stats,"+++Notes interne: %s\n",reclamationList[i].noteInterne);
+                }
+                fprintf(stats,"+++Date de reclamation: %s\n",reclamationList[i].date);
+                if(reclamationList[i].estTraiter == 0){
+                    fprintf(stats,"+++Traiter ou Non: Non traiter\n");
+                    } else {
+        		fprintf(stats,"+++Traiter ou Non: traiter avec success\n");
+        		}
+               }
+            //    afficher les reclmation resolue sur le rapport
+               fprintf(stats,"\n===>Le taux de resolution des reclamations est %.2f%%<==\n",tauxResolution);
+            fprintf(stats,"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
+            for (int i = 0; i < countReclamations; i++) {
+                if (strcmp(reclamationList[i].status,"resolue") == 0) {
+                    fprintf(stats,"******************Reclamation %d****************\n",i+1);
+                fprintf(stats,"+++Id de reclamation: %d\n",reclamationList[i].id);
+                fprintf(stats,"+++Client: %s\n",utilisateursList[reclamationList[i].client].nom);
+                fprintf(stats,"+++Motif de reclamation: %s\n",reclamationList[i].motif);
+                fprintf(stats,"+++Description de reclamation: %s\n",reclamationList[i].description);
+                fprintf(stats,"+++Categorie de reclamation: %s\n",reclamationList[i].categorie);
+                fprintf(stats,"+++priorite de reclamation: %s\n",reclamationList[i].priorite);
+                fprintf(stats,"+++status de reclamation: %s\n",reclamationList[i].status);
+                if ( strcmp(reclamationList[i].noteInterne,"")!= 0) {
+                fprintf(stats,"+++Notes interne: %s\n",reclamationList[i].noteInterne);
+                }
+                fprintf(stats,"+++Date de reclamation: %s\n",reclamationList[i].date);
+                if(reclamationList[i].estTraiter == 0){
+                    fprintf(stats,"+++Traiter ou Non: Non traiter\n");
+                    } else {
+        		fprintf(stats,"+++Traiter ou Non: traiter avec success\n");
+        		}
+                }
+               }
             fclose(stats);
             printf("++++++Le rapport a ete generer avec success++++\n");
             commenceJournee = time(NULL); //commencer la journee avec la date de generation de rapport
@@ -531,11 +573,9 @@ void signUp(){
     tempPass[strcspn(tempPass,"\n")] = '\0';
     if (validePass(tempPass) == 1) { //valider si le mot pass est valide
        strcpy(utilisateursList[countUtilisateurs].motPass,tempPass);
-       countUtilisateurs++;
-       system("@cls||clear"); //vider le console
+       countUtilisateurs++; //vider le console
        printf("+++votre compte a ete cree avec succes++++\n");
     } else {
-        system("@cls||clear");
         printf("Entrer un mot pass valid (plus 8 caractere avec des lettres majusculles et miniscule et des chiffres et des lettres special et ne repete pas le nom utilisateur et ne contient pas votre nom!!)\n");
         signUp();
     }
@@ -614,7 +654,7 @@ void menu(int roleNum) {
             getchar();
             switch (menuChoix){
                 case 1:
-                    system("@cls||clear");
+
                     afficherReclamations();
                 break;
                 case 2:
@@ -626,13 +666,13 @@ void menu(int roleNum) {
                             printf("1.Entrer l'identifiant que vous veuiller modifier: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                             modifierRec(smRecId);
                         } else if (subMenuChoix ==2) {
                              printf("2.Entrer l'identifiant que vous veuiller supprimer: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                             supprimerRec(smRecId);
                         };
                     break;
@@ -651,15 +691,14 @@ void menu(int roleNum) {
                     scanf("%d",&subMenuChoix);
                     getchar();
                     if (subMenuChoix == 1) {
-                    system("@cls||clear");
+
                     afficherUtilisateurs();
                     } else if (subMenuChoix ==2) {
-                    system("@cls||clear");
+
                     changerRole();
                     }
                 break;
                 case 6:
-                system("@cls||clear");
                 StatsReports();
                 break;
                 
@@ -680,7 +719,6 @@ void menu(int roleNum) {
             getchar();
             switch (menuChoix){
                 case 1:
-                system("@cls||clear");
                 afficherReclamations();
                 break;
                 case 2:
@@ -692,13 +730,13 @@ void menu(int roleNum) {
                             printf("1.Entrer l'identifiant que vous veuiller modifier: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                             modifierRec(smRecId);
                         } else if (subMenuChoix ==2) {
                              printf("2.Entrer l'identifiant que vous veuiller supprimer: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                             supprimerRec(smRecId);
                         };
                     break;
@@ -709,7 +747,7 @@ void menu(int roleNum) {
                         traiterRec(idTraiter);
                         break;
                     case 4:
-                        system("@cls||clear");
+    
                         rechercher();
                         break;
             }     
@@ -728,7 +766,6 @@ void menu(int roleNum) {
             getchar();
              switch (menuChoix) {
                 case 1:
-                system("@cls||clear");
                 ajoutReclamation();
                 break;
                 case 2:
@@ -740,13 +777,13 @@ void menu(int roleNum) {
                             printf("1.Entrer l'identifiant que vous veuiller modifier: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                            modifierRecClient(smRecId);
                         } else if (subMenuChoix ==2) {
                              printf("2.Entrer l'identifiant que vous veuiller supprimer: ");
                             scanf("%d",&smRecId);
                             getchar();
-                            system("@cls||clear");
+        
                             supprimerRecClient(smRecId);
                         };
                     break;
@@ -782,14 +819,12 @@ void signIn(){
 
     // sign in si les infos sont correct, et repeter si il sont fausse
     if (vrai == 1) {
-        system("@cls||clear");
         printf("+++Vous avez sign in avec succes+++\n");
         // afficher le menu par rapport a l'utilisateur qui est connnecter
         menu(verifierRole(indexUtilisateur));
         countSiFausse = 0;
 
     } else {
-        system("@cls||clear");
         printf("+++veuillez verifier votre information+++\n");
         countSiFausse++;
         // verouiller l'input pour 30 second avant saisir un autre fois
@@ -822,10 +857,8 @@ int main() {
             scanf("%d",&choixMenuPrincipal);
             getchar();
             if (choixMenuPrincipal == 1) {
-                system("@cls||clear");
                 signUp();
             } else if (choixMenuPrincipal == 2) {
-                system("@cls||clear");
                 signIn();
             }
     } while (choixMenuPrincipal != 3);

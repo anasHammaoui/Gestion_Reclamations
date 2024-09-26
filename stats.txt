@@ -1,5 +1,62 @@
-******Tue Sep 24 13:00:53 2024
+******Thu Sep 26 10:26:28 2024
 *******
-+++++Nous avons 5 Reclamations en total++++
-===>Le taux de resolution des reclamations est 40.00% <==
++++++Nous avons 3 Reclamations en total++++
+
+******************Reclamation 1****************
++++Id de reclamation: 23548
++++Client: anas
++++Motif de reclamation: service
++++Description de reclamation: urgent
++++Categorie de reclamation: service
++++priorite de reclamation: haute
++++status de reclamation: en cours
++++Date de reclamation: Thu Sep 26 10:24:35 2024
++++Traiter ou Non: Non traiter
+******************Reclamation 2****************
++++Id de reclamation: 23636
++++Client: anas
++++Motif de reclamation: facturation
++++Description de reclamation: important
++++Categorie de reclamation: facturation
++++priorite de reclamation: moyenne
++++status de reclamation: resolue
++++Notes interne: bien resolue
++++Date de reclamation: Thu Sep 26 10:25:04 2024
++++Traiter ou Non: traiter avec success
+******************Reclamation 3****************
++++Id de reclamation: 23581
++++Client: anas
++++Motif de reclamation: produit
++++Description de reclamation: secondaire
++++Categorie de reclamation: produit
++++priorite de reclamation: basse
++++status de reclamation: resolue
++++Notes interne: resolue avec success
++++Date de reclamation: Thu Sep 26 10:24:51 2024
++++Traiter ou Non: traiter avec success
+
+===>Le taux de resolution des reclamations est 66.67%<==
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+******************Reclamation 2****************
++++Id de reclamation: 23636
++++Client: anas
++++Motif de reclamation: facturation
++++Description de reclamation: important
++++Categorie de reclamation: facturation
++++priorite de reclamation: moyenne
++++status de reclamation: resolue
++++Notes interne: bien resolue
++++Date de reclamation: Thu Sep 26 10:25:04 2024
++++Traiter ou Non: traiter avec success
+******************Reclamation 3****************
++++Id de reclamation: 23581
++++Client: anas
++++Motif de reclamation: produit
++++Description de reclamation: secondaire
++++Categorie de reclamation: produit
++++priorite de reclamation: basse
++++status de reclamation: resolue
++++Notes interne: resolue avec success
++++Date de reclamation: Thu Sep 26 10:24:51 2024
++++Traiter ou Non: traiter avec success
